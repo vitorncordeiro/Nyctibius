@@ -104,6 +104,16 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
     new Set(contributions.flatMap((contribution) => contribution.bootstrapHooks ?? [])),
   );
 
+  const moduleImportPaths: Record<string, string> = {
+    AuthModule: './auth/auth.module.js',
+    BullModule: './jobs/jobs.module.js',
+    JobsModule: './jobs/jobs.module.js',
+    KafkaModule: './messaging/kafka/kafka.module.js',
+    PrismaModule: './database/prisma.module.js',
+    RabbitMqModule: './messaging/rabbitmq/rabbitmq.module.js',
+    RedisModule: './cache/redis.module.js',
+  };
+
   const importStatements = [
     "import { Module } from '@nestjs/common';",
     "import { ConfigModule } from '@nestjs/config';",
@@ -112,15 +122,16 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
     "import { envSchema } from './config/env.validation.js';",
   ];
 
-  if (moduleImports.includes('PrismaModule')) {
-    importStatements.push("import { PrismaModule } from './database/prisma.module.js';");
+  for (const moduleName of moduleImports) {
+    const importPath = moduleImportPaths[moduleName];
+    if (importPath) {
+      importStatements.push(`import { ${moduleName} } from '${importPath}';`);
+    }
   }
 
-  const extraModuleEntries = moduleImports.filter((item) => item !== 'PrismaModule');
   const moduleEntries = [
     `ConfigModule.forRoot({\n      isGlobal: true,\n      envFilePath: ['.env', '.env.local'],\n      validate: (config) => envSchema.parse(config),\n    })`,
-    ...extraModuleEntries,
-    ...(moduleImports.includes('PrismaModule') ? ['PrismaModule'] : []),
+    ...moduleImports,
   ];
 
   const generatedAppModule = `${importStatements.join('\n')}\n\n@Module({\n  imports: [\n    ${moduleEntries.join(',\n    ')}\n  ],\n  controllers: [AppController],\n  providers: [AppService],\n})\nexport class AppModule {}\n`;

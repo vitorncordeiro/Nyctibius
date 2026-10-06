@@ -49,6 +49,26 @@ const projectOptionsSchema = z.object({
   }),
 });
 
+export function validateProjectOptions(options: ProjectOptions): ProjectOptions {
+  if (options.jobs.provider === 'bullmq' && options.cache.provider !== 'redis') {
+    throw new Error('BullMQ requires Redis.');
+  }
+
+  if (options.database.provider === 'none' && options.database.orm !== 'none') {
+    throw new Error('ORM is invalid when database is disabled.');
+  }
+
+  if (options.database.provider === 'mongodb' && options.database.orm === 'typeorm') {
+    throw new Error('TypeORM conflicts with MongoDB.');
+  }
+
+  if (options.database.provider !== 'none' && options.database.orm === 'none') {
+    throw new Error('A database ORM must be selected when a database provider is enabled.');
+  }
+
+  return options;
+}
+
 export function parseProjectOptions(input: Partial<ProjectOptions>): ProjectOptions {
   const normalized = {
     ...DEFAULT_OPTIONS,
@@ -99,7 +119,8 @@ export function parseProjectOptions(input: Partial<ProjectOptions>): ProjectOpti
     },
   } satisfies ProjectOptions;
 
-  return projectOptionsSchema.parse(normalized);
+  const parsed = projectOptionsSchema.parse(normalized);
+  return resolveAutomaticChoices(parsed);
 }
 
 export function resolveAutomaticChoices(options: ProjectOptions): ProjectOptions {
@@ -133,5 +154,12 @@ export function resolveAutomaticChoices(options: ProjectOptions): ProjectOptions
     };
   }
 
-  return next;
+  if (next.database.provider === 'mongodb' && next.database.orm === 'prisma') {
+    next = {
+      ...next,
+      database: { ...next.database, orm: 'prisma' },
+    };
+  }
+
+  return validateProjectOptions(next);
 }

@@ -1,16 +1,46 @@
 {
   "name": "nyctibius",
   "version": "0.1.0",
-  "private": true,
+  "description": "Opinionated NestJS project initializer CLI",
+  "private": false,
   "type": "module",
   "bin": {
     "nyctibius": "dist/index.js"
   },
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.en.md",
+    "PROJECT.md"
+  ],
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
     "lint": "tsc --noEmit",
     "test": "node --test --import tsx './test/**/*.test.ts'"
+  },
+  "keywords": [
+    "nestjs",
+    "cli",
+    "generator",
+    "scaffold",
+    "typescript",
+    "initializer"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vitorncordeiro/nyctibius.git"
+  },
+  "homepage": "https://github.com/vitorncordeiro/nyctibius#readme",
+  "author": "Nyctibius Contributors",
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "commander": "^12.1.0",

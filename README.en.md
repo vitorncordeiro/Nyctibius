@@ -10,21 +10,21 @@ The goal of this project is to reduce the time spent on the initial boilerplate 
 
 - create the project base without relying on `nest new`;
 - generate core files deterministically;
-- integrate common technologies such as Prisma, Swagger, Docker, and JWT authentication;
+- integrate common technologies such as Prisma, Swagger, Docker, Redis, BullMQ, RabbitMQ, Kafka, and JWT;
 - support interactive usage and non-interactive CI/CD flows;
 - keep the generator and assembler architecture extensible.
 
 ## Current status
 
-This repository is in its early implementation phase, with the CLI foundation already working and the generation architecture structured according to the proposal in `PROJECT.md`.
-
-The current implementation includes:
+The CLI foundation is working and the current implementation covers:
 
 - generation of a base NestJS project;
 - option validation with Zod;
+- automatic dependency resolution (`implies`, `requires`, `conflicts`);
 - conditional generation of Swagger and Prisma;
-- Dockerfile and docker-compose generation;
-- generation of `.env`, `.env.example`, and `.gitignore`;
+- support for Redis, BullMQ, RabbitMQ, Kafka, and JWT;
+- Dockerfile and Compose service generation;
+- generation of `.env`, `.env.example`, `.gitignore`, and initial module structure;
 - `--dry-run` support;
 - project generation in a new directory with `--no-install`.
 
@@ -69,7 +69,9 @@ node dist/index.js <project-name> \
   --orm prisma \
   --swagger \
   --auth jwt \
-  --redis \
+  --cache redis \
+  --jobs bullmq \
+  --messaging rabbitmq \
   --docker
 ```
 
@@ -81,9 +83,20 @@ Supported features:
 - `--orm <prisma|typeorm|mongoose|none>`
 - `--swagger`
 - `--auth <jwt|none>`
-- `--redis`
+- `--cache <redis|none>`
+- `--jobs <bullmq|none>`
+- `--messaging <rabbitmq|kafka|none>`
 - `--docker`
 - `--package-manager <npm|pnpm|yarn>`
+
+## Dependency rules implemented
+
+The CLI now applies automatic adjustments to maintain a consistent project:
+
+- `BullMQ` automatically enables `Redis`;
+- `MongoDB + TypeORM` is corrected to `Mongoose`;
+- `database === none` clears `orm`;
+- invalid combinations are rejected by validation.
 
 ## Project structure
 
@@ -97,18 +110,25 @@ nyctibius/
 │   ├── types.ts
 │   └── generators/
 │       ├── base.generator.ts
+│       ├── bullmq.generator.ts
 │       ├── docker.generator.ts
 │       ├── git.generator.ts
+│       ├── jwt.generator.ts
+│       ├── kafka.generator.ts
 │       ├── prisma.generator.ts
+│       ├── rabbitmq.generator.ts
+│       ├── redis.generator.ts
 │       ├── swagger.generator.ts
 │       └── types.ts
 ├── test/
-│   └── generation.test.ts
+│   ├── generation.test.ts
+│   └── project-options.test.ts
 ├── package.json
 ├── tsconfig.json
 ├── PROJECT.md
 ├── README.md
-└── README.en.md
+├── README.en.md
+└── dist/
 ```
 
 ## Generation flow
@@ -129,18 +149,17 @@ Nyctibius aims to answer a simple need:
 
 > choose the architecture and let the tool handle the heavy boilerplate.
 
-In other words, the developer defines the technological baseline and the CLI generates the project with the basic infrastructure already ready for development.
+In other words, the developer defines the technological baseline and the CLI generates a project with the basic infrastructure already ready for development.
 
 ## Next steps
 
-The planned evolution follows the milestones in `PROJECT.md`, including:
+The evolution continues according to the milestones in `PROJECT.md`, focusing on:
 
-- complete preset support;
-- full JWT authentication support;
-- Redis, RabbitMQ, and BullMQ;
-- PostgreSQL/MySQL/MongoDB with dependency rules;
-- health checks, logging, and broader Docker Compose support;
-- generation tests with real builds of generated projects.
+- more complete presets;
+- JWT authentication refinement and refresh tokens;
+- health checks and observability;
+- broader Docker Compose and local service coverage;
+- smoke tests for generated projects and deeper validation.
 
 ## Contribution
 

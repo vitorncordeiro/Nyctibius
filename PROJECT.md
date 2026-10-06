@@ -33,6 +33,24 @@ O Nyctibius deverá instalar as dependências, criar a estrutura inicial, config
 
 ---
 
+## Status da implementação atual
+
+A base do MVP foi implementada e validada em código.
+
+- [x] CLI de geração funcional com `--dry-run`, `--no-install` e flags declarativas
+- [x] `ProjectOptions`, `Generator`, `Contribution` e montagem via assembler
+- [x] Base NestJS gerada com TypeScript e estrutura inicial
+- [x] Configuração de ambiente com validação via `zod`
+- [x] Swagger gerado de forma condicional
+- [x] Prisma gerado por provider e scripts compatíveis
+- [x] Redis, BullMQ, RabbitMQ e Kafka como generators independentes
+- [x] JWT + Passport como módulo gerado
+- [x] Dockerfile e Compose gerados dinamicamente
+- [x] `.env`, `.env.example` e `.gitignore` produzidos
+- [x] Resolução automática de dependências (`implies`, `requires`, `conflicts`)
+- [x] Testes focados para geração e validação de opções
+- [x] Build TypeScript funcionando
+
 # 2. Objetivos
 
 ## Objetivos principais
@@ -1508,48 +1526,50 @@ Gerar:
 
 Objetivo: validar o sistema de generators, contribuições e assembler de ponta a ponta antes de ampliar o escopo.
 
-- [ ] CLI mínima (nome do projeto, gerenciador de pacotes)
-- [ ] `ProjectOptions`, `Generator`, `Contribution` e assembler
-- [ ] Base NestJS própria (Express)
-- [ ] Config com validação de ambiente
-- [ ] Swagger
-- [ ] PostgreSQL + Prisma
-- [ ] Dockerfile + Docker Compose (PostgreSQL)
-- [ ] `.env`, `.env.example`, `.gitignore`
-- [ ] Teste que gera o projeto, instala e executa o build
+- [x] CLI mínima (nome do projeto, gerenciador de pacotes)
+- [x] `ProjectOptions`, `Generator`, `Contribution` e assembler
+- [x] Base NestJS própria (Express)
+- [x] Config com validação de ambiente
+- [x] Swagger
+- [x] PostgreSQL + Prisma
+- [x] Dockerfile + Docker Compose (PostgreSQL)
+- [x] `.env`, `.env.example`, `.gitignore`
+- [x] Teste que gera o projeto, instala e executa o build
 
 ## MVP v0.1
 
 ### Core
 
-- [ ] CLI
-- [ ] Nome do projeto
-- [ ] npm/pnpm/yarn
-- [ ] geração de projeto NestJS
-- [ ] instalação de dependências
-- [ ] `.env`
-- [ ] `.env.example`
-- [ ] `.gitignore`
-- [ ] `--dry-run`
+- [x] CLI
+- [x] Nome do projeto
+- [x] npm/pnpm/yarn
+- [x] geração de projeto NestJS
+- [x] instalação de dependências
+- [x] `.env`
+- [x] `.env.example`
+- [x] `.gitignore`
+- [x] `--dry-run`
 
 ### API
 
-- [ ] Express
+- [x] Express
 - [ ] Fastify
-- [ ] Swagger
+- [x] Swagger
 - [ ] Validation (class-validator)
 
 ### Database
 
-- [ ] PostgreSQL
-- [ ] Prisma
+- [x] PostgreSQL
+- [x] Prisma
 - [ ] TypeORM
 
 ### Infrastructure
 
-- [ ] Redis
-- [ ] RabbitMQ
-- [ ] BullMQ
+- [x] Redis
+- [x] RabbitMQ
+- [x] BullMQ
+- [x] Kafka (KRaft)
+- [x] JWT
 
 ### Tooling
 
@@ -1559,11 +1579,12 @@ Objetivo: validar o sistema de generators, contribuições e assembler de ponta 
 
 ### Docker
 
-- [ ] Dockerfile
-- [ ] Docker Compose
-- [ ] PostgreSQL
-- [ ] Redis
-- [ ] RabbitMQ
+- [x] Dockerfile
+- [x] Docker Compose
+- [x] PostgreSQL
+- [x] Redis
+- [x] RabbitMQ
+- [x] Kafka
 
 ---
 

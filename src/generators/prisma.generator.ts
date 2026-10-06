@@ -1,4 +1,4 @@
-import type { Generator, Contribution } from './types.js';
+import type { Contribution, Generator } from './types.js';
 import type { ProjectOptions } from '../types.js';
 
 export class PrismaGenerator implements Generator {
@@ -8,24 +8,45 @@ export class PrismaGenerator implements Generator {
     return options.database.provider !== 'none' && options.database.orm === 'prisma';
   }
 
-  contribute(): Contribution {
-    return {
-      dependencies: [{ name: '@prisma/client', version: '^6.0.0' }],
-      devDependencies: [{ name: 'prisma', version: '^6.0.0', dev: true }],
-      env: [{ name: 'DATABASE_URL', value: 'postgresql://postgres:postgres@localhost:5432/app' }],
-      scripts: {
-        'db:generate': 'prisma generate',
-        'db:migrate': 'prisma migrate dev',
-        'db:studio': 'prisma studio',
-      },
-      moduleImports: ['PrismaModule'],
-      files: {
-        'prisma/schema.prisma': `generator client {
+  contribute({ options }: { options: ProjectOptions }): Contribution {
+    const databaseProvider = options.database.provider === 'mysql' ? 'mysql' : 'postgresql';
+    const isMongo = options.database.provider === 'mongodb';
+
+    const scriptEntries: Record<string, string> = isMongo
+      ? {
+          'db:generate': 'prisma generate',
+          'db:push': 'prisma db push',
+          'db:studio': 'prisma studio',
+        }
+      : {
+          'db:generate': 'prisma generate',
+          'db:migrate': 'prisma migrate dev',
+          'db:studio': 'prisma studio',
+          'db:reset': 'prisma migrate reset --force',
+        };
+
+    const schema = isMongo
+      ? `generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  email String  @unique
+  name  String?
+}
+`
+      : `generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "${databaseProvider}"
   url      = env("DATABASE_URL")
 }
 
@@ -34,7 +55,19 @@ model User {
   email String  @unique
   name  String?
 }
-`,
+`;
+
+    return {
+      dependencies: [{ name: '@prisma/client', version: '^6.0.0' }],
+      devDependencies: [{ name: 'prisma', version: '^6.0.0', dev: true }],
+      env: [{
+        name: 'DATABASE_URL',
+        value: options.database.provider === 'mysql' ? 'mysql://localhost:3306/app' : 'postgresql://localhost:5432/app',
+      }],
+      scripts: scriptEntries,
+      moduleImports: ['PrismaModule'],
+      files: {
+        'prisma/schema.prisma': schema,
         'src/database/prisma.module.ts': `import { Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service.js';
 

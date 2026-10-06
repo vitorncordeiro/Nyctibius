@@ -20,7 +20,10 @@ program
   .option('--orm <orm>', 'ORM/ODM: prisma, typeorm, mongoose, none')
   .option('--swagger', 'Enable Swagger')
   .option('--auth <provider>', 'Auth provider: jwt or none')
+  .option('--cache <provider>', 'Cache provider: redis or none')
   .option('--redis', 'Enable Redis cache')
+  .option('--messaging <provider>', 'Messaging provider: rabbitmq, kafka or none')
+  .option('--jobs <provider>', 'Jobs provider: bullmq or none')
   .option('--docker', 'Generate Docker files')
   .option('--dry-run', 'Only print planned output without writing files')
   .option('--no-install', 'Skip installing generated dependencies')
@@ -50,12 +53,20 @@ const baseOptions: Partial<ProjectOptions> = {
   },
   cache: {
     ...DEFAULT_OPTIONS.cache,
-    provider: cliOptions.redis ? 'redis' : DEFAULT_OPTIONS.cache.provider,
+  provider: cliOptions.cache ?? (cliOptions.redis ? 'redis' : DEFAULT_OPTIONS.cache.provider),
   },
-  docker: {
-    ...DEFAULT_OPTIONS.docker,
-    enabled: Boolean(cliOptions.docker) || DEFAULT_OPTIONS.docker.enabled,
+messaging: {
+  ...DEFAULT_OPTIONS.messaging,
+  provider: cliOptions.messaging ?? DEFAULT_OPTIONS.messaging.provider,
   },
+jobs: {
+  ...DEFAULT_OPTIONS.jobs,
+  provider: cliOptions.jobs ?? DEFAULT_OPTIONS.jobs.provider,
+},
+docker: {
+  ...DEFAULT_OPTIONS.docker,
+  enabled: Boolean(cliOptions.docker) || DEFAULT_OPTIONS.docker.enabled,
+},
 };
 
 const options = resolveAutomaticChoices(parseProjectOptions(baseOptions));
