@@ -9,13 +9,15 @@ import { getGenerators } from './registry.js';
 import { assembleProject, writeGeneratedProject } from './assembler.js';
 import { DEFAULT_OPTIONS, type ProjectOptions } from './types.js';
 import { parseProjectOptions, resolveAutomaticChoices } from './project-options.js';
+import { promptProjectConfiguration } from './prompts.js';
 
 const program = new Command();
 program
   .name('nyctibius')
   .description('Generate a NestJS project scaffold.')
   .argument('[projectName]', 'Project name', 'my-api')
-  .option('--package-manager <manager>', 'Package manager to use', 'npm')
+  .option('--interactive', 'Prompt for project settings interactively')
+  .option('--package-manager <manager>', 'Package manager to use')
   .option('--database <provider>', 'Database provider: postgres, mysql, mongodb, none')
   .option('--orm <orm>', 'ORM/ODM: prisma, typeorm, mongoose, none')
   .option('--swagger', 'Enable Swagger')
@@ -33,6 +35,17 @@ program.parse(process.argv);
 
 const cliOptions = program.opts();
 const projectName = program.args[0] ?? 'my-api';
+const hasExplicitConfig =
+  cliOptions.database !== undefined ||
+  cliOptions.orm !== undefined ||
+  Boolean(cliOptions.swagger) ||
+  cliOptions.auth !== undefined ||
+  cliOptions.cache !== undefined ||
+  Boolean(cliOptions.redis) ||
+  cliOptions.messaging !== undefined ||
+  cliOptions.jobs !== undefined ||
+  Boolean(cliOptions.docker) ||
+  Boolean(cliOptions.interactive);
 
 const baseOptions: Partial<ProjectOptions> = {
   ...DEFAULT_OPTIONS,
@@ -53,23 +66,30 @@ const baseOptions: Partial<ProjectOptions> = {
   },
   cache: {
     ...DEFAULT_OPTIONS.cache,
-  provider: cliOptions.cache ?? (cliOptions.redis ? 'redis' : DEFAULT_OPTIONS.cache.provider),
+    provider: cliOptions.cache ?? (cliOptions.redis ? 'redis' : DEFAULT_OPTIONS.cache.provider),
   },
-messaging: {
-  ...DEFAULT_OPTIONS.messaging,
-  provider: cliOptions.messaging ?? DEFAULT_OPTIONS.messaging.provider,
+  messaging: {
+    ...DEFAULT_OPTIONS.messaging,
+    provider: cliOptions.messaging ?? DEFAULT_OPTIONS.messaging.provider,
   },
-jobs: {
-  ...DEFAULT_OPTIONS.jobs,
-  provider: cliOptions.jobs ?? DEFAULT_OPTIONS.jobs.provider,
-},
-docker: {
-  ...DEFAULT_OPTIONS.docker,
-  enabled: Boolean(cliOptions.docker) || DEFAULT_OPTIONS.docker.enabled,
-},
+  jobs: {
+    ...DEFAULT_OPTIONS.jobs,
+    provider: cliOptions.jobs ?? DEFAULT_OPTIONS.jobs.provider,
+  },
+  docker: {
+    ...DEFAULT_OPTIONS.docker,
+    enabled: Boolean(cliOptions.docker) || DEFAULT_OPTIONS.docker.enabled,
+  },
 };
 
-const options = resolveAutomaticChoices(parseProjectOptions(baseOptions));
+const shouldPrompt = cliOptions.interactive || (!hasExplicitConfig && process.stdin.isTTY);
+const interactiveOptions = shouldPrompt ? await promptProjectConfiguration(baseOptions) : {};
+const mergedOptions = {
+  ...DEFAULT_OPTIONS,
+  ...baseOptions,
+  ...interactiveOptions,
+};
+const options = resolveAutomaticChoices(parseProjectOptions(mergedOptions));
 
 const targetDir = join(process.cwd(), options.projectName);
 
