@@ -20,7 +20,7 @@ export class JwtGenerator implements Generator {
         { name: '@nestjs/jwt', version: '^11.0.0' },
         { name: '@nestjs/passport', version: '^11.0.0' },
         { name: 'passport', version: '^0.7.0' },
-        { name: 'passport-jwt', version: '^4.1.1' },
+        { name: 'passport-jwt', version: '^4.0.1' },
       ],
       env,
       moduleImports: ['AuthModule'],
