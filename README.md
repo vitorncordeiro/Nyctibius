@@ -1,69 +1,84 @@
 # Nyctibius
 
-Nyctibius é um gerador de projetos NestJS pensado para acelerar a criação da base de uma API backend com arquitetura consistente e configuração mínima manual.
+<div align="center">
+  <p>
+    <a href="./README.md">EN</a> |
+    <a href="./README.ptbr.md">PT-BR</a>
+  </p>
+</div>
 
-Ele foi inspirado no conceito de scaffolding opinado, em que a CLI aplica defaults úteis e gera uma estrutura pronta para desenvolvimento, sem impedir customização posterior.
+Nyctibius is a NestJS project generator designed to speed up the creation of a backend API with a consistent architecture and minimal manual setup.
 
-## Visão geral
+It follows the idea of an opinionated scaffolding tool: the CLI applies sensible defaults and generates a ready-to-develop project without preventing later customization.
 
-O objetivo do projeto é reduzir o tempo gasto em boilerplate inicial de aplicações NestJS:
+## Overview
 
-- criar a base do projeto sem depender de `nest new`;
-- gerar arquivos centrais de forma determinística;
-- integrar tecnologias comuns como Prisma, Swagger, Docker, Redis, BullMQ, RabbitMQ, Kafka e JWT;
-- permitir execução interativa e modo não interativo em CI/CD;
-- manter a arquitetura de generators e assembler extensível.
+The goal of this project is to reduce the time spent on the initial boilerplate of NestJS applications:
 
-## Status atual
+- create the project base without relying on `nest new`;
+- generate core files deterministically;
+- integrate common technologies such as Prisma, Swagger, Docker, Redis, BullMQ, RabbitMQ, Kafka, and JWT;
+- support interactive usage and non-interactive CI/CD flows;
+- keep the generator and assembler architecture extensible.
 
-A base do CLI está funcional e a implementação atual cobre:
+## Current status
 
-- geração de um projeto NestJS base;
-- validação de opções com Zod;
-- resolução automática de dependências (`implies`, `requires`, `conflicts`);
-- suporte condicional a Swagger e Prisma;
-- suporte a Redis, BullMQ, RabbitMQ, Kafka e JWT;
-- geração de Dockerfile e serviços do Compose;
-- geração de `.env`, `.env.example`, `.gitignore` e estrutura inicial de módulos;
-- modo `--dry-run`;
-- geração de projeto em diretório novo com `--no-install`.
+The CLI foundation is working and the current implementation covers:
 
-## Como usar
+- generation of a base NestJS project;
+- option validation with Zod;
+- automatic dependency resolution (`implies`, `requires`, `conflicts`);
+- conditional generation of Swagger and Prisma;
+- support for Redis, BullMQ, RabbitMQ, Kafka, and JWT;
+- Dockerfile and Compose service generation;
+- generation of `.env`, `.env.example`, `.gitignore`, and initial module structure;
+- `--dry-run` support;
+- project generation in a new directory with `--no-install`.
 
-### Instalar dependências
+## How to use it
+
+### Install dependencies
 
 ```bash
 npm install
 ```
 
-### Compilar o CLI
+### Build the CLI
 
 ```bash
 npm run build
 ```
 
-### Executar em modo simulado
+### Run in interactive mode
+
+When the CLI is executed in an interactive terminal without explicit options, it opens a selection wizard with keyboard navigation. You can also force it explicitly with:
+
+```bash
+node dist/index.js --interactive
+```
+
+### Run a dry run
 
 ```bash
 node dist/index.js --dry-run demo-api --package-manager npm
 ```
 
-### Gerar um projeto real
+### Generate a real project
 
 ```bash
 node dist/index.js demo-api --package-manager npm --no-install
 ```
 
-### Ajuda da CLI
+### CLI help
 
 ```bash
 node dist/index.js --help
 ```
 
-## Opções principais
+## Main options
 
 ```bash
-node dist/index.js <nome-do-projeto> \
+node dist/index.js <project-name> \
   --package-manager npm \
   --database postgres \
   --orm prisma \
@@ -75,7 +90,7 @@ node dist/index.js <nome-do-projeto> \
   --docker
 ```
 
-Principais recursos suportados:
+Supported features:
 
 - `--dry-run`
 - `--no-install`
@@ -89,16 +104,16 @@ Principais recursos suportados:
 - `--docker`
 - `--package-manager <npm|pnpm|yarn>`
 
-## Regras de dependência implementadas
+## Dependency rules implemented
 
-A CLI agora faz ajustes automáticos para manter o projeto consistente:
+The CLI now applies automatic adjustments to maintain a consistent project:
 
-- `BullMQ` ativa `Redis` automaticamente;
-- `MongoDB + TypeORM` é corrigido para `Mongoose`;
-- `database === none` zera `orm`;
-- combinações inválidas são rejeitadas por validação.
+- `BullMQ` automatically enables `Redis`;
+- `MongoDB + TypeORM` is corrected to `Mongoose`;
+- `database === none` clears `orm`;
+- invalid combinations are rejected by validation.
 
-## Estrutura do projeto
+## Project structure
 
 ```text
 nyctibius/
@@ -127,46 +142,46 @@ nyctibius/
 ├── tsconfig.json
 ├── PROJECT.md
 ├── README.md
-├── README.en.md
+├── README.ptbr.md
 └── dist/
 ```
 
-## Fluxo de geração
+## Generation flow
 
-A arquitetura segue a proposta de `PROJECT.md`:
+The architecture follows the plan described in `PROJECT.md`:
 
-1. CLI coleta opções;
-2. validação com Zod;
-3. resolução automática de dependências;
-4. execução dos generators;
-5. agregação de contribuições pelo `assembler`;
-6. escrita dos arquivos finais;
-7. instalação de dependências e pós-processamento.
+1. CLI collects options;
+2. Zod validation runs;
+3. automatic dependency resolution occurs;
+4. generators execute;
+5. contributions are merged by the assembler;
+6. final files are written;
+7. dependency installation and post-generation steps happen.
 
-## Objetivo do projeto
+## Project goal
 
-O Nyctibius busca responder a uma necessidade simples:
+Nyctibius aims to answer a simple need:
 
-> escolher a arquitetura e deixar o boilerplate pesado para a ferramenta.
+> choose the architecture and let the tool handle the heavy boilerplate.
 
-Em outras palavras, o desenvolvedor define a base tecnológica e a CLI gera um projeto com a infraestrutura básica pronta para começar a desenvolver.
+In other words, the developer defines the technological baseline and the CLI generates a project with the basic infrastructure already ready for development.
 
-## Próximos passos
+## Next steps
 
-A evolução planejada continua seguindo os marcos descritos em `PROJECT.md`, com foco em:
+The evolution continues according to the milestones in `PROJECT.md`, focusing on:
 
-- presets mais completos;
-- refinamento da autenticação JWT e refresh tokens;
-- health checks e observabilidade;
-- ampliar a cobertura de Docker Compose e serviços locais;
-- testes de smoke em projetos gerados e validações mais profundas.
+- more complete presets;
+- JWT authentication refinement and refresh tokens;
+- health checks and observability;
+- broader Docker Compose and local service coverage;
+- smoke tests for generated projects and deeper validation.
 
-## Contribuição
+## Contribution
 
-Contribuições são bem-vindas. Para colaborar:
+Contributions are welcome. To contribute:
 
 ```bash
-git checkout -b feature/sua-mudanca
+git checkout -b feature/your-change
 npm install
 npm run build
 npm test

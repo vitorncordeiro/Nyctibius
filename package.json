@@ -14,7 +14,7 @@
   "files": [
     "dist",
     "README.md",
-    "README.en.md",
+    "README.ptbr.md",
     "PROJECT.md"
   ],
   "scripts": {
@@ -43,6 +43,7 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@clack/prompts": "^1.8.1",
     "commander": "^12.1.0",
     "execa": "^9.4.0",
     "zod": "^3.23.8"
