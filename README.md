@@ -14,7 +14,6 @@ It follows the idea of an opinionated scaffolding tool: the CLI applies sensible
 ## Overview
 
 The goal of this project is to reduce the time spent on the initial boilerplate of NestJS applications:
-
 - create the project base without relying on `nest new`;
 - generate core files deterministically;
 - integrate common technologies such as Prisma, Swagger, Docker, Redis, BullMQ, RabbitMQ, Kafka, and JWT;

@@ -1,5 +1,9 @@
 # Nyctibius
 
+<p align="center">
+  <img src="./nyctibius.svg" alt="Nyctibius logo" width="180" />
+</p>
+
 <div align="center">
   <p>
     <a href="./README.md">EN</a> |
