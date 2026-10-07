@@ -21,6 +21,7 @@ program
   .option('--database <provider>', 'Database provider: postgres, mysql, mongodb, none')
   .option('--orm <orm>', 'ORM/ODM: prisma, typeorm, mongoose, none')
   .option('--swagger', 'Enable Swagger')
+  .option('--validation <mode>', 'Validation mode: class-validator, zod or none')
   .option('--auth <provider>', 'Auth provider: jwt or none')
   .option('--cache <provider>', 'Cache provider: redis or none')
   .option('--redis', 'Enable Redis cache')
@@ -39,6 +40,7 @@ const hasExplicitConfig =
   cliOptions.database !== undefined ||
   cliOptions.orm !== undefined ||
   Boolean(cliOptions.swagger) ||
+  cliOptions.validation !== undefined ||
   cliOptions.auth !== undefined ||
   cliOptions.cache !== undefined ||
   Boolean(cliOptions.redis) ||
@@ -54,6 +56,7 @@ const baseOptions: Partial<ProjectOptions> = {
   api: {
     ...DEFAULT_OPTIONS.api,
     swagger: Boolean(cliOptions.swagger) || DEFAULT_OPTIONS.api.swagger,
+    validation: cliOptions.validation ?? DEFAULT_OPTIONS.api.validation,
   },
   database: {
     ...DEFAULT_OPTIONS.database,

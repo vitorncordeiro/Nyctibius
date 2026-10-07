@@ -19,6 +19,14 @@ export class BaseGenerator implements Generator {
       'test:watch': 'node --test --watch',
     };
 
+    const validationDependencies =
+      options.api.validation === 'class-validator'
+        ? [
+            { name: 'class-validator', version: '^0.13.2' },
+            { name: 'class-transformer', version: '^0.5.1' },
+          ]
+        : [];
+
     return {
       dependencies: [
         { name: '@nestjs/common', version: '^11.0.0' },
@@ -28,6 +36,7 @@ export class BaseGenerator implements Generator {
         { name: 'reflect-metadata', version: '^0.2.2' },
         { name: 'rxjs', version: '^7.6.0' },
         { name: 'zod', version: '^3.23.8' },
+        ...validationDependencies,
       ],
       devDependencies: [
         { name: '@types/node', version: '^22.10.2', dev: true },

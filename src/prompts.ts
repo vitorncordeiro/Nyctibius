@@ -114,6 +114,15 @@ export async function promptProjectConfiguration(
         );
 
   const swagger = await promptBoolean('API documentation (Swagger)', current.api?.swagger ?? DEFAULT_OPTIONS.api.swagger);
+  const validationSelection = await promptSelect(
+    'Validation',
+    [
+      { value: 'class-validator', label: 'class-validator' },
+      { value: 'zod', label: 'Zod' },
+      { value: 'none', label: 'None' },
+    ],
+    current.api?.validation ?? DEFAULT_OPTIONS.api.validation,
+  );
   const authSelection = await promptSelect(
     'Authentication',
     [
@@ -167,6 +176,7 @@ export async function promptProjectConfiguration(
     api: {
       ...DEFAULT_OPTIONS.api,
       swagger,
+      validation: validationSelection,
     },
     database: {
       provider: databaseProvider,

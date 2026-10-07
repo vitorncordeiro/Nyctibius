@@ -137,16 +137,24 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
   const generatedAppModule = `${importStatements.join('\n')}\n\n@Module({\n  imports: [\n    ${moduleEntries.join(',\n    ')}\n  ],\n  controllers: [AppController],\n  providers: [AppService],\n})\nexport class AppModule {}\n`;
 
   const mainImports = [
-    "import { ValidationPipe } from '@nestjs/common';",
     "import { NestFactory } from '@nestjs/core';",
     "import { AppModule } from './app.module.js';",
   ];
+
+  if (options.api.validation === 'class-validator') {
+    mainImports.unshift("import { ValidationPipe } from '@nestjs/common';");
+  }
 
   if (options.api.swagger) {
     mainImports.push("import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';");
   }
 
-  const generatedMain = `${mainImports.join('\n')}\n\nasync function bootstrap(): Promise<void> {\n  const app = await NestFactory.create(AppModule${options.api.adapter === 'fastify' ? ', { logger: true }' : ''});\n  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));\n  ${bootstrapHooks.join('\n  ')}\n\n  await app.listen(process.env.PORT ?? 3000);\n}\n\nbootstrap();\n`;
+  const validationPipeStatement =
+    options.api.validation === 'class-validator'
+      ? '  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));'
+      : '';
+
+  const generatedMain = `${mainImports.join('\n')}\n\nasync function bootstrap(): Promise<void> {\n  const app = await NestFactory.create(AppModule${options.api.adapter === 'fastify' ? ', { logger: true }' : ''});\n${validationPipeStatement}\n  ${bootstrapHooks.join('\n  ')}\n\n  await app.listen(process.env.PORT ?? 3000);\n}\n\nbootstrap();\n`;
 
   const dockerCompose = renderDockerCompose(contributions.flatMap((contribution) => contribution.dockerServices ?? []));
 
