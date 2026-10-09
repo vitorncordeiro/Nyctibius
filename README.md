@@ -9,6 +9,9 @@
     <a href="./README.md">EN</a> |
     <a href="./README.ptbr.md">PT-BR</a>
   </p>
+  <p>
+    <a href="https://www.npmjs.com/package/nyctibius"><img src="https://img.shields.io/npm/v/nyctibius.svg" alt="npm version" /></a>
+  </p>
 </div>
 
 Nyctibius is a NestJS project generator designed to speed up the creation of a backend API with a consistent architecture and minimal manual setup.
@@ -40,19 +43,46 @@ The CLI foundation is working and the current implementation covers:
 
 ## How to use it
 
-### Install dependencies
+You can run Nyctibius directly using `npx` via the [npm package](https://www.npmjs.com/package/nyctibius), or by cloning the repository locally to run it from source.
+
+### Option 1: Via `npx` (No setup required)
+
+Since the project is available as an [npm package](https://www.npmjs.com/package/nyctibius), you can execute it immediately:
 
 ```bash
+# Interactive mode (wizard)
+npx nyctibius
+
+# Or pass options directly
+npx nyctibius demo-api --database postgres --orm prisma --docker
+```
+
+You can also install it globally:
+
+```bash
+npm install -g nyctibius
+nyctibius --interactive
+```
+
+### Option 2: Running from source (Cloning the repository)
+
+1. Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/vitorncordeiro/nyctibius.git
+cd nyctibius
 npm install
 ```
 
-### Build the CLI
+2. Build the CLI:
 
 ```bash
 npm run build
 ```
 
-### Run in interactive mode
+3. Run the CLI:
+
+#### Run in interactive mode
 
 When the CLI is executed in an interactive terminal without explicit options, it opens a selection wizard with keyboard navigation. You can also force it explicitly with:
 
@@ -60,27 +90,46 @@ When the CLI is executed in an interactive terminal without explicit options, it
 node dist/index.js --interactive
 ```
 
-### Run a dry run
+#### Run a dry run
 
 ```bash
 node dist/index.js --dry-run demo-api --package-manager npm
+# or via npx:
+# npx nyctibius --dry-run demo-api --package-manager npm
 ```
 
-### Generate a real project
+#### Generate a real project
 
 ```bash
 node dist/index.js demo-api --package-manager npm --no-install
+# or via npx:
+# npx nyctibius demo-api --package-manager npm --no-install
 ```
 
-### CLI help
+#### CLI help
 
 ```bash
 node dist/index.js --help
+# or via npx:
+# npx nyctibius --help
 ```
 
 ## Main options
 
 ```bash
+# Via npx:
+npx nyctibius <project-name> \
+  --package-manager npm \
+  --database postgres \
+  --orm prisma \
+  --swagger \
+  --auth jwt \
+  --cache redis \
+  --jobs bullmq \
+  --messaging rabbitmq \
+  --docker
+
+# Or from local build:
 node dist/index.js <project-name> \
   --package-manager npm \
   --database postgres \
