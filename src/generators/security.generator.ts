@@ -12,7 +12,7 @@ export class SecurityGenerator implements Generator {
   contribute(): Contribution {
     return {
       dependencies: [
-        { name: '@nestjs/helmet', version: '^3.1.1' },
+        { name: 'helmet', version: '^8.3.0' },
         { name: '@nestjs/throttler', version: VERSIONS.nestjs.throttler },
       ],
       files: {
@@ -31,6 +31,7 @@ export class SecurityMiddleware {
 `,
       },
       bootstrapHooks: [
+        "import helmet from 'helmet';",
         'app.use(helmet({ contentSecurityPolicy: false }));',
       ],
     };

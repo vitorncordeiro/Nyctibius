@@ -129,12 +129,14 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
   const moduleImportPaths: Record<string, string> = {
     AuthModule: './auth/auth.module.js',
     BullModule: './jobs/jobs.module.js',
+    HealthModule: './health/health.module.js',
     HttpClientModule: './http/http-client.module.js',
     JobsModule: './jobs/jobs.module.js',
     KafkaModule: './messaging/kafka/kafka.module.js',
     PrismaModule: './database/prisma.module.js',
     RabbitMqModule: './messaging/rabbitmq/rabbitmq.module.js',
     RedisModule: './cache/redis.module.js',
+    TerminusModule: '@nestjs/terminus',
   };
 
   const importStatements = [
@@ -148,7 +150,11 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
   for (const moduleName of moduleImports) {
     const importPath = moduleImportPaths[moduleName];
     if (importPath) {
-      importStatements.push(`import { ${moduleName} } from '${importPath}';`);
+      if (importPath.startsWith('.')) {
+        importStatements.push(`import { ${moduleName} } from '${importPath}';`);
+      } else {
+        importStatements.push(`import { ${moduleName} } from '${importPath}';`);
+      }
     }
   }
 
@@ -177,7 +183,10 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
       ? '  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));'
       : '';
 
-  const generatedMain = `${mainImports.join('\n')}\n\nasync function bootstrap(): Promise<void> {\n  const app = await NestFactory.create(AppModule${options.api.adapter === 'fastify' ? ', { logger: true }' : ''});\n${validationPipeStatement}\n  ${bootstrapHooks.join('\n  ')}\n\n  await app.listen(process.env.PORT ?? 3000);\n}\n\nbootstrap();\n`;
+  const bootstrapImportHooks = bootstrapHooks.filter((hook) => hook.startsWith('import '));
+  const bootstrapRuntimeHooks = bootstrapHooks.filter((hook) => !hook.startsWith('import '));
+
+  const generatedMain = `${[...mainImports, ...bootstrapImportHooks].join('\n')}\n\nasync function bootstrap(): Promise<void> {\n  const app = await NestFactory.create(AppModule${options.api.adapter === 'fastify' ? ', { logger: true }' : ''});\n${validationPipeStatement}\n  ${bootstrapRuntimeHooks.join('\n  ')}\n\n  await app.listen(process.env.PORT ?? 3000);\n}\n\nbootstrap();\n`;
 
   const dockerServices = contributions.flatMap((contribution) => contribution.dockerServices ?? []);
   const dockerCompose = dockerServices.length ? renderDockerCompose(dockerServices) : '';

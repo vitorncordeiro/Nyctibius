@@ -11,21 +11,21 @@ export class HealthCheckGenerator implements Generator {
 
   contribute({ options }: { options: ProjectOptions }): Contribution {
     const healthChecks: string[] = [];
-    const imports: string[] = [];
+    const extraImports: string[] = [];
 
     if (options.database.provider !== 'none') {
       healthChecks.push('TypeOrmHealthIndicator');
-      imports.push("import { TypeOrmHealthIndicator } from '@nestjs/terminus';");
+      extraImports.push("import { TypeOrmHealthIndicator } from '@nestjs/terminus';");
     }
 
     if (options.cache.provider === 'redis') {
       healthChecks.push('RedisHealthIndicator');
-      imports.push("import { RedisHealthIndicator } from '@nestjs/terminus';");
+      extraImports.push("import { RedisHealthIndicator } from '@nestjs/terminus';");
     }
 
     const healthCheckService = `import { Injectable } from '@nestjs/common';
 import { HealthCheckService, HttpHealthIndicator${healthChecks.length > 0 ? ', ' + healthChecks.join(', ') : ''} } from '@nestjs/terminus';
-${imports.join('\n')}
+${extraImports.join('\n')}
 
 @Injectable()
 export class HealthIndicatorService {

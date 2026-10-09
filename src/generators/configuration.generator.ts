@@ -26,24 +26,23 @@ export { envSchema, type EnvConfig } from './env.validation.js';
         'src/config/configuration.ts': `import type { EnvConfig } from './env.validation.js';
 
 export const configuration = (): EnvConfig => ({
-  nodeEnv: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '3000', 10),
-  logLevel: process.env.LOG_LEVEL || 'debug',
-  database: {
-    url: process.env.DATABASE_URL,
-  },
-  cache: {
-    url: process.env.REDIS_URL,
-  },
-  auth: {
-    jwtSecret: process.env.JWT_SECRET,
-    jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
-    tokenExpiresIn: process.env.JWT_EXPIRES_IN || '1h',
-  },
-  messaging: {
-    brokers: process.env.KAFKA_BROKERS?.split(',') || ['localhost:9092'],
-    rabbitMqUrl: process.env.RABBITMQ_URL,
-  },
+  NODE_ENV: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test' ? process.env.NODE_ENV : 'development',
+  PORT: parseInt(process.env.PORT || '3000', 10),
+  LOG_LEVEL:
+    process.env.LOG_LEVEL === 'error' ||
+    process.env.LOG_LEVEL === 'warn' ||
+    process.env.LOG_LEVEL === 'log' ||
+    process.env.LOG_LEVEL === 'debug' ||
+    process.env.LOG_LEVEL === 'verbose'
+      ? process.env.LOG_LEVEL
+      : 'debug',
+  DATABASE_URL: process.env.DATABASE_URL,
+  REDIS_URL: process.env.REDIS_URL,
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1h',
+  KAFKA_BROKERS: process.env.KAFKA_BROKERS,
+  RABBITMQ_URL: process.env.RABBITMQ_URL,
 });
 `,
         'src/config/env.validation.ts': `import { z } from 'zod';
