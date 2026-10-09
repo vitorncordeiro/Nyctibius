@@ -1,5 +1,6 @@
 import type { Contribution, Generator } from './types.js';
 import type { ProjectOptions } from '../types.js';
+import { VERSIONS } from '../versions.js';
 
 export class JwtGenerator implements Generator {
   id = 'jwt';
@@ -17,10 +18,11 @@ export class JwtGenerator implements Generator {
 
     return {
       dependencies: [
-        { name: '@nestjs/jwt', version: '^11.0.0' },
-        { name: '@nestjs/passport', version: '^11.0.0' },
-        { name: 'passport', version: '^0.7.0' },
-        { name: 'passport-jwt', version: '^4.0.1' },
+        { name: '@nestjs/jwt', version: VERSIONS.nestjs.jwt },
+        { name: '@nestjs/passport', version: VERSIONS.nestjs.passport },
+        { name: 'passport', version: VERSIONS.auth.passport },
+        { name: 'passport-jwt', version: VERSIONS.auth.passportJwt },
+        { name: 'bcryptjs', version: VERSIONS.auth.bcryptjs },
       ],
       env,
       moduleImports: ['AuthModule'],

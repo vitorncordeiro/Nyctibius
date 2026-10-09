@@ -1,5 +1,6 @@
 import type { Contribution, Generator } from './types.js';
 import type { ProjectOptions } from '../types.js';
+import { VERSIONS } from '../versions.js';
 
 export class RedisGenerator implements Generator {
   id = 'redis';
@@ -10,13 +11,13 @@ export class RedisGenerator implements Generator {
 
   contribute(): Contribution {
     return {
-      dependencies: [{ name: 'ioredis', version: '^5.6.1' }],
+      dependencies: [{ name: 'ioredis', version: VERSIONS.cache.ioredis }],
       env: [{ name: 'REDIS_URL', value: 'redis://localhost:6379' }],
       moduleImports: ['RedisModule'],
       dockerServices: [
         {
           name: 'redis',
-          image: 'redis:7-alpine',
+          image: VERSIONS.docker.redis,
           ports: ['"6379:6379"'],
         },
       ],

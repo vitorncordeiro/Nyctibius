@@ -1,5 +1,6 @@
 import type { Contribution, Generator } from './types.js';
 import type { ProjectOptions } from '../types.js';
+import { VERSIONS } from '../versions.js';
 
 export class PrismaGenerator implements Generator {
   id = 'prisma';
@@ -58,8 +59,8 @@ model User {
 `;
 
     return {
-      dependencies: [{ name: '@prisma/client', version: '^6.0.0' }],
-      devDependencies: [{ name: 'prisma', version: '^6.0.0', dev: true }],
+      dependencies: [{ name: '@prisma/client', version: VERSIONS.database.prismaClient }],
+      devDependencies: [{ name: 'prisma', version: VERSIONS.database.prisma, dev: true }],
       env: [{
         name: 'DATABASE_URL',
         value: options.database.provider === 'mysql' ? 'mysql://localhost:3306/app' : 'postgresql://localhost:5432/app',

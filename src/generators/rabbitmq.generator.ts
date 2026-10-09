@@ -1,5 +1,6 @@
 import type { Contribution, Generator } from './types.js';
 import type { ProjectOptions } from '../types.js';
+import { VERSIONS } from '../versions.js';
 
 export class RabbitMqGenerator implements Generator {
   id = 'rabbitmq';
@@ -10,7 +11,7 @@ export class RabbitMqGenerator implements Generator {
 
   contribute(): Contribution {
     return {
-      dependencies: [{ name: '@nestjs/microservices', version: '^11.0.0' }],
+      dependencies: [{ name: '@nestjs/microservices', version: VERSIONS.nestjs.microservices }],
       env: [{ name: 'RABBITMQ_URL', value: 'amqp://localhost:5672' }],
       moduleImports: ['RabbitMqModule'],
       dockerServices: [

@@ -1,5 +1,6 @@
 import type { Contribution, Generator } from './types.js';
 import type { ProjectOptions } from '../types.js';
+import { VERSIONS } from '../versions.js';
 
 export class KafkaGenerator implements Generator {
   id = 'kafka';
@@ -10,7 +11,7 @@ export class KafkaGenerator implements Generator {
 
   contribute(): Contribution {
     return {
-      dependencies: [{ name: '@nestjs/microservices', version: '^11.0.0' }],
+      dependencies: [{ name: '@nestjs/microservices', version: VERSIONS.nestjs.microservices }],
       env: [
         { name: 'KAFKA_BROKERS', value: 'localhost:9092' },
         { name: 'KAFKA_CLIENT_ID', value: 'nyctibius-client' },

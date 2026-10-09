@@ -1,5 +1,6 @@
 import type { Generator, Contribution } from './types.js';
 import type { ProjectOptions } from '../types.js';
+import { VERSIONS } from '../versions.js';
 
 export class BaseGenerator implements Generator {
   id = 'base';
@@ -15,35 +16,38 @@ export class BaseGenerator implements Generator {
       'start:debug': 'node --inspect-brk dist/main.js',
       build: 'tsc -p tsconfig.build.json',
       lint: 'eslint . --ext .ts',
-      test: 'node --test',
-      'test:watch': 'node --test --watch',
+      test: 'jest',
+      'test:watch': 'jest --watch',
+      'test:cov': 'jest --coverage',
     };
 
     const validationDependencies =
       options.api.validation === 'class-validator'
         ? [
-            { name: 'class-validator', version: '^0.13.2' },
-            { name: 'class-transformer', version: '^0.5.1' },
+            { name: 'class-validator', version: VERSIONS.validation.classValidator },
+            { name: 'class-transformer', version: VERSIONS.validation.classTransformer },
           ]
         : [];
 
     return {
       dependencies: [
-        { name: '@nestjs/common', version: '^11.0.0' },
-        { name: '@nestjs/core', version: '^11.0.0' },
-        { name: '@nestjs/platform-express', version: '^11.0.0' },
-        { name: '@nestjs/config', version: '^4.0.0' },
-        { name: 'reflect-metadata', version: '^0.2.2' },
-        { name: 'rxjs', version: '^7.6.0' },
-        { name: 'zod', version: '^3.23.8' },
+        { name: '@nestjs/common', version: VERSIONS.nestjs.common },
+        { name: '@nestjs/core', version: VERSIONS.nestjs.core },
+        { name: '@nestjs/platform-express', version: VERSIONS.nestjs.platform },
+        { name: '@nestjs/config', version: VERSIONS.nestjs.config },
+        { name: 'reflect-metadata', version: VERSIONS.core.reflectMetadata },
+        { name: 'rxjs', version: VERSIONS.core.rxjs },
+        { name: 'zod', version: VERSIONS.validation.zod },
         ...validationDependencies,
       ],
       devDependencies: [
-        { name: '@types/node', version: '^22.10.2', dev: true },
-        { name: '@nestjs/cli', version: '^11.0.0', dev: true },
-        { name: 'ts-node', version: '^10.9.2', dev: true },
-        { name: 'tsx', version: '^4.19.2', dev: true },
-        { name: 'typescript', version: '^5.7.2', dev: true },
+        { name: '@types/node', version: VERSIONS.dev.typesNode, dev: true },
+        { name: '@nestjs/cli', version: VERSIONS.nestjs.cli, dev: true },
+        { name: 'ts-node', version: VERSIONS.dev.tsNode, dev: true },
+        { name: 'tsx', version: VERSIONS.dev.tsx, dev: true },
+        { name: 'typescript', version: VERSIONS.dev.typescript, dev: true },
+        { name: '@types/jest', version: VERSIONS.dev.typesJest, dev: true },
+        { name: 'jest', version: VERSIONS.dev.jest, dev: true },
       ],
       scripts,
       env: [

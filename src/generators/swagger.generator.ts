@@ -1,5 +1,6 @@
 import type { Generator, Contribution } from './types.js';
 import type { ProjectOptions } from '../types.js';
+import { VERSIONS } from '../versions.js';
 
 export class SwaggerGenerator implements Generator {
   id = 'swagger';
@@ -11,7 +12,7 @@ export class SwaggerGenerator implements Generator {
   contribute(): Contribution {
     return {
       dependencies: [
-        { name: '@nestjs/swagger', version: '^11.0.0' },
+        { name: '@nestjs/swagger', version: VERSIONS.nestjs.swagger },
       ],
       bootstrapHooks: [
         "const config = new DocumentBuilder().setTitle('Nyctibius API').setDescription('Generated API').setVersion('1.0').build();",

@@ -1,5 +1,6 @@
 import type { Contribution, Generator } from './types.js';
 import type { ProjectOptions } from '../types.js';
+import { VERSIONS } from '../versions.js';
 
 export class BullMqGenerator implements Generator {
   id = 'bullmq';
@@ -11,8 +12,8 @@ export class BullMqGenerator implements Generator {
   contribute(): Contribution {
     return {
       dependencies: [
-        { name: 'bullmq', version: '^5.0.0' },
-        { name: '@nestjs/bullmq', version: '^11.0.0' },
+        { name: 'bullmq', version: VERSIONS.messaging.bullmq },
+        { name: '@nestjs/bullmq', version: VERSIONS.nestjs.bullmq },
       ],
       env: [{ name: 'REDIS_URL', value: 'redis://localhost:6379' }],
       moduleImports: ['JobsModule'],
