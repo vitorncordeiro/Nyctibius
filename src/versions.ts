@@ -12,6 +12,7 @@ export const VERSIONS = {
     config: '^4.0.0',
     platform: '^11.0.0',
     swagger: '^11.0.0',
+    axios: '^11.0.0',
     jwt: '^11.0.0',
     passport: '^11.0.0',
     microservices: '^11.0.0',

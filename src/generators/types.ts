@@ -13,12 +13,14 @@ export interface EnvVar {
 
 export interface DockerService {
   name: string;
-  image: string;
+  image?: string;
+  build?: string;
   ports?: string[];
   environment?: string[];
   volumes?: string[];
   healthcheck?: string;
   dependsOn?: string[];
+  networks?: string[];
 }
 
 export interface Contribution {

@@ -143,6 +143,14 @@ export async function promptProjectConfiguration(
         );
 
   const swagger = await promptBoolean('API documentation (Swagger)', current.api?.swagger ?? DEFAULT_OPTIONS.api.swagger);
+  const httpClientSelection = await promptSelect(
+    'HTTP client',
+    [
+      { value: 'axios', label: 'Axios (@nestjs/axios)' },
+      { value: 'none', label: 'None' },
+    ],
+    current.api?.httpClient ?? DEFAULT_OPTIONS.api.httpClient,
+  );
   const validationSelection = await promptSelect(
     'Validation',
     [
@@ -240,6 +248,7 @@ export async function promptProjectConfiguration(
     api: {
       ...DEFAULT_OPTIONS.api,
       swagger,
+      httpClient: httpClientSelection,
       validation: validationSelection,
     },
     database: {

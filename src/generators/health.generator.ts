@@ -45,6 +45,7 @@ export class HealthIndicatorService {
 
     return {
       dependencies: [
+        { name: '@nestjs/axios', version: VERSIONS.nestjs.axios },
         { name: '@nestjs/terminus', version: VERSIONS.nestjs.terminus },
       ],
       moduleImports: ['TerminusModule', 'HealthModule'],

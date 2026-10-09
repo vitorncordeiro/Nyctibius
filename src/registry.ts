@@ -4,6 +4,7 @@ import { ConfigurationGenerator } from './generators/configuration.generator.js'
 import { DockerGenerator } from './generators/docker.generator.js';
 import { GitGenerator } from './generators/git.generator.js';
 import { HealthCheckGenerator } from './generators/health.generator.js';
+import { HttpClientGenerator } from './generators/http-client.generator.js';
 import { JwtGenerator } from './generators/jwt.generator.js';
 import { KafkaGenerator } from './generators/kafka.generator.js';
 import { LoggingGenerator } from './generators/logging.generator.js';
@@ -23,6 +24,7 @@ export function getGenerators(): Generator[] {
     new LoggingGenerator(),
     new SecurityGenerator(),
     new SwaggerGenerator(),
+    new HttpClientGenerator(),
     new PrismaGenerator(),
     new RedisGenerator(),
     new BullMqGenerator(),

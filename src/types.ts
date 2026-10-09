@@ -1,6 +1,7 @@
 export type PackageManager = 'npm' | 'pnpm' | 'yarn';
 export type ApiAdapter = 'express' | 'fastify';
 export type ValidationMode = 'class-validator' | 'zod' | 'none';
+export type HttpClientProvider = 'axios' | 'none';
 export type DatabaseProvider = 'postgres' | 'mysql' | 'mongodb' | 'none';
 export type DatabaseOrm = 'prisma' | 'typeorm' | 'mongoose' | 'none';
 export type AuthProvider = 'jwt' | 'none';
@@ -18,6 +19,7 @@ export interface ProjectOptions {
     adapter: ApiAdapter;
     swagger: boolean;
     validation: ValidationMode;
+    httpClient: HttpClientProvider;
   };
   database: {
     provider: DatabaseProvider;
@@ -65,6 +67,7 @@ export const DEFAULT_OPTIONS: ProjectOptions = {
     adapter: 'express',
     swagger: true,
     validation: 'class-validator',
+    httpClient: 'none',
   },
   database: {
     provider: 'postgres',

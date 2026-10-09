@@ -22,7 +22,14 @@ function mergeEntries(entries: Dependency[] = []): Record<string, string> {
 function renderDockerCompose(services: DockerService[]): string {
   const rendered = services
     .map((service) => {
-      const lines = [`  ${service.name}:`, `    image: ${service.image}`];
+      const lines = [`  ${service.name}:`];
+
+      if (service.build) {
+        lines.push(`    build: ${service.build}`);
+      }
+      if (service.image) {
+        lines.push(`    image: ${service.image}`);
+      }
 
       if (service.ports?.length) {
         lines.push('    ports:');
@@ -52,6 +59,13 @@ function renderDockerCompose(services: DockerService[]): string {
         }
       }
 
+      if (service.networks?.length) {
+        lines.push('    networks:');
+        for (const network of service.networks) {
+          lines.push(`      - ${network}`);
+        }
+      }
+
       if (service.healthcheck) {
         lines.push(`    healthcheck: ${service.healthcheck}`);
       }
@@ -60,7 +74,15 @@ function renderDockerCompose(services: DockerService[]): string {
     })
     .join('\n\n');
 
-  return `services:\n${rendered}\n`;
+  const volumes = Array.from(
+    new Set(
+      services.flatMap((service) => service.volumes ?? []).filter((volume) => volume.includes(':') || volume.includes('/')),
+    ),
+  );
+
+  const volumeSection = volumes.length ? `\nvolumes:\n${volumes.map((volume) => `  ${volume.split(':')[0]}: {}`).join('\n')}` : '';
+
+  return `services:\n${rendered}${volumeSection}\n`;
 }
 
 export function assembleProject(options: ProjectOptions, contributions: Contribution[]): BuildArtifacts {
@@ -107,6 +129,7 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
   const moduleImportPaths: Record<string, string> = {
     AuthModule: './auth/auth.module.js',
     BullModule: './jobs/jobs.module.js',
+    HttpClientModule: './http/http-client.module.js',
     JobsModule: './jobs/jobs.module.js',
     KafkaModule: './messaging/kafka/kafka.module.js',
     PrismaModule: './database/prisma.module.js',
@@ -156,13 +179,16 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
 
   const generatedMain = `${mainImports.join('\n')}\n\nasync function bootstrap(): Promise<void> {\n  const app = await NestFactory.create(AppModule${options.api.adapter === 'fastify' ? ', { logger: true }' : ''});\n${validationPipeStatement}\n  ${bootstrapHooks.join('\n  ')}\n\n  await app.listen(process.env.PORT ?? 3000);\n}\n\nbootstrap();\n`;
 
-  const dockerCompose = renderDockerCompose(contributions.flatMap((contribution) => contribution.dockerServices ?? []));
+  const dockerServices = contributions.flatMap((contribution) => contribution.dockerServices ?? []);
+  const dockerCompose = dockerServices.length ? renderDockerCompose(dockerServices) : '';
 
   mergedFiles['src/app.module.ts'] = generatedAppModule;
   mergedFiles['src/main.ts'] = generatedMain;
   mergedFiles['.env.example'] = uniqueEnv.join('\n') + '\n';
   mergedFiles['.env'] = uniqueEnvLocal.join('\n') + '\n';
-  mergedFiles['docker-compose.yml'] = dockerCompose + '\n';
+  if (dockerCompose) {
+    mergedFiles['docker-compose.yml'] = dockerCompose + '\n';
+  }
   mergedFiles['.gitignore'] = ['node_modules', '.env', '.env.local', '.env.*', '!.env.example', 'dist', 'coverage'].join('\n') + '\n';
 
   const packageJson = {

@@ -21,6 +21,8 @@ program
   .option('--database <provider>', 'Database provider: postgres, mysql, mongodb, none')
   .option('--orm <orm>', 'ORM/ODM: prisma, typeorm, mongoose, none')
   .option('--swagger', 'Enable Swagger')
+  .option('--http-client <provider>', 'HTTP client: axios or none')
+  .option('--axios', 'Enable Axios HTTP client')
   .option('--validation <mode>', 'Validation mode: class-validator, zod or none')
   .option('--auth <provider>', 'Auth provider: jwt or none')
   .option('--cache <provider>', 'Cache provider: redis or none')
@@ -40,6 +42,8 @@ const hasExplicitConfig =
   cliOptions.database !== undefined ||
   cliOptions.orm !== undefined ||
   Boolean(cliOptions.swagger) ||
+  cliOptions.httpClient !== undefined ||
+  Boolean(cliOptions.axios) ||
   cliOptions.validation !== undefined ||
   cliOptions.auth !== undefined ||
   cliOptions.cache !== undefined ||
@@ -56,6 +60,8 @@ const baseOptions: Partial<ProjectOptions> = {
   api: {
     ...DEFAULT_OPTIONS.api,
     swagger: Boolean(cliOptions.swagger) || DEFAULT_OPTIONS.api.swagger,
+    httpClient:
+      cliOptions.httpClient ?? (cliOptions.axios ? 'axios' : DEFAULT_OPTIONS.api.httpClient),
     validation: cliOptions.validation ?? DEFAULT_OPTIONS.api.validation,
   },
   database: {
@@ -91,6 +97,11 @@ const mergedOptions = {
   ...DEFAULT_OPTIONS,
   ...baseOptions,
   ...interactiveOptions,
+  api: {
+    ...DEFAULT_OPTIONS.api,
+    ...baseOptions.api,
+    ...interactiveOptions.api,
+  },
 };
 const options = resolveAutomaticChoices(parseProjectOptions(mergedOptions));
 

@@ -121,21 +121,43 @@ test('Smoke Test - RabbitMQ: messaging dependency is standardized', async () => 
   assert.equal(pkg.dependencies['@nestjs/microservices'], VERSIONS.nestjs.microservices);
 });
 
-test('Smoke Test - Docker: images use standardized versions', async () => {
+test('Smoke Test - Axios: HTTP client dependency is standardized', async () => {
+  const options: ProjectOptions = {
+    ...DEFAULT_OPTIONS,
+    api: { ...DEFAULT_OPTIONS.api, httpClient: 'axios' },
+  };
+
+  const { packageJson, files } = await assembleWithGenerators(options);
+  const pkg = packageJson as Record<string, any>;
+
+  assert.equal(pkg.dependencies['@nestjs/axios'], VERSIONS.nestjs.axios);
+  assert.ok(files['src/http/http-client.module.ts']);
+});
+
+test('Smoke Test - Docker: compose includes relevant services and health checks', async () => {
   const options: ProjectOptions = {
     ...DEFAULT_OPTIONS,
     database: { provider: 'postgres', orm: 'prisma' },
+    cache: { provider: 'redis' },
+    messaging: { provider: 'kafka' },
     docker: { enabled: true, compose: true },
   };
 
   const { files } = await assembleWithGenerators(options);
   const dockerfile = files['Dockerfile'];
+  const dockerCompose = files['docker-compose.yml'];
 
   assert.ok(dockerfile, 'Dockerfile should be generated');
   assert.ok(
     (dockerfile as string).includes(VERSIONS.docker.nodeAlpine),
     'Dockerfile should use standardized Node Alpine image',
   );
+  assert.ok(dockerCompose, 'docker-compose.yml should be generated');
+  assert.match(dockerCompose as string, /services:/);
+  assert.match(dockerCompose as string, /db:/);
+  assert.match(dockerCompose as string, /redis:/);
+  assert.match(dockerCompose as string, /kafka:/);
+  assert.match(dockerCompose as string, /healthcheck:/);
 });
 
 test('Smoke Test - Validation: invalid combinations are properly caught', () => {

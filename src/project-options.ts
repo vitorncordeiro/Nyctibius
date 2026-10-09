@@ -10,6 +10,7 @@ const projectOptionsSchema = z.object({
     adapter: z.enum(['express', 'fastify']),
     swagger: z.boolean(),
     validation: z.enum(['class-validator', 'zod', 'none']),
+    httpClient: z.enum(['axios', 'none']),
   }),
   database: z.object({
     provider: z.enum(['postgres', 'mysql', 'mongodb', 'none']),
