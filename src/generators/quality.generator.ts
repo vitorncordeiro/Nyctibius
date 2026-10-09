@@ -17,47 +17,37 @@ export class QualityGenerator implements Generator {
     if (options.quality.eslint) {
       devDependencies.push(
         { name: 'eslint', version: VERSIONS.dev.eslint, dev: true },
-        { name: '@typescript-eslint/eslint-plugin', version: '^7.1.1', dev: true },
-        { name: '@typescript-eslint/parser', version: '^7.1.1', dev: true },
-        { name: 'eslint-config-prettier', version: '^9.1.0', dev: true },
-        { name: 'eslint-plugin-prettier', version: '^5.1.3', dev: true },
+        { name: '@eslint/js', version: VERSIONS.dev.eslintJs, dev: true },
+        { name: 'globals', version: VERSIONS.dev.globals, dev: true },
+        { name: 'typescript-eslint', version: VERSIONS.dev.typescriptEslint, dev: true },
+        { name: 'eslint-config-prettier', version: VERSIONS.dev.eslintConfigPrettier, dev: true },
       );
 
-      scripts['lint:fix'] = 'eslint . --ext .ts --fix';
+      scripts['lint'] = 'eslint .';
+      scripts['lint:fix'] = 'eslint . --fix';
 
-      files['.eslintrc.js'] = `module.exports = {
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: 'tsconfig.json',
-    sourceType: 'module',
-  },
-  plugins: ['@typescript-eslint/eslint-plugin'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
-  root: true,
-  env: {
-    node: true,
-    jest: true,
-  },
-  ignorePatterns: ['.eslintignore'],
-  rules: {
-    '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'warn',
-  },
-};
-`;
+      files['eslint.config.mjs'] = `import js from '@eslint/js';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
-      files['.eslintignore'] = `node_modules
-dist
-coverage
-.next
-.nuxt
-*.spec.ts
-*.test.ts
+export default tseslint.config(
+  { ignores: ['dist', 'node_modules', 'coverage'] },
+  {
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    files: ['**/*.{ts,mts}'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      globals: globals.node,
+    },
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
+  eslintConfigPrettier,
+);
 `;
     }
 

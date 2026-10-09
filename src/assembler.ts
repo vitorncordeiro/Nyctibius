@@ -97,7 +97,7 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
     'start:dev': 'tsx watch src/main.ts',
     'start:debug': 'node --inspect-brk dist/main.js',
     build: 'tsc -p tsconfig.build.json',
-    lint: 'eslint . --ext .ts',
+    lint: 'eslint .',
     test: 'node --test',
   });
 
@@ -220,6 +220,21 @@ export function assembleProject(options: ProjectOptions, contributions: Contribu
       tsx: '^4.19.2',
       typescript: '^5.7.2',
       ...devDependencies,
+    },
+    overrides: {
+      glob: '^13.0.0',
+      rimraf: '^5.0.0',
+      'deepmerge-ts': '^8.0.2',
+      'js-yaml': '^5.4.3',
+    },
+    allowScripts: {
+      '@prisma/client': true,
+      '@prisma/engines': true,
+      prisma: true,
+      esbuild: true,
+      '@scarf/scarf': true,
+      '@parcel/watcher': true,
+      'unrs-resolver': true,
     },
     engines: {
       node: `>=${options.nodeVersion}`,

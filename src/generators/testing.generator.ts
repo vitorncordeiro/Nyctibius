@@ -14,6 +14,7 @@ export class TestingGenerator implements Generator {
       return {
         dependencies: [],
         devDependencies: [
+          { name: '@nestjs/testing', version: VERSIONS.nestjs.testing, dev: true },
           { name: 'vitest', version: VERSIONS.dev.vitest, dev: true },
           { name: '@vitest/ui', version: '^1.6.0', dev: true },
         ],
@@ -36,7 +37,7 @@ export default defineConfig({
 `,
           'test/app.e2e-spec.ts': `import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
+import { AppModule } from '../src/app.module.js';
 import { describe, it, expect, beforeAll } from 'vitest';
 
 describe('AppController (e2e)', () => {
@@ -64,6 +65,7 @@ describe('AppController (e2e)', () => {
     return {
       dependencies: [],
       devDependencies: [
+        { name: '@nestjs/testing', version: VERSIONS.nestjs.testing, dev: true },
         { name: 'jest', version: VERSIONS.dev.jest, dev: true },
         { name: '@types/jest', version: VERSIONS.dev.typesJest, dev: true },
         { name: 'ts-jest', version: '^29.1.1', dev: true },
@@ -86,6 +88,9 @@ describe('AppController (e2e)', () => {
   ],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
+  moduleNameMapper: {
+    '^(\\\\.{1,2}/.*)\\\\.js$': '$1',
+  },
 };
 `,
         'test/jest-e2e.json': `{
@@ -95,12 +100,15 @@ describe('AppController (e2e)', () => {
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^(\\\\.{1,2}/.*)\\\\.js$": "$1"
   }
 }
 `,
         'src/app.controller.spec.ts': `import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
 
 describe('AppController', () => {
   let controller: AppController;
@@ -118,6 +126,7 @@ describe('AppController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+    expect(service).toBeDefined();
   });
 
   describe('getHello', () => {
@@ -130,7 +139,7 @@ describe('AppController', () => {
 `,
         'test/app.e2e-spec.ts': `import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
+import { AppModule } from '../src/app.module.js';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

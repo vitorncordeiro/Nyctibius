@@ -21,7 +21,7 @@ export class LoggingGenerator implements Generator {
         ],
         files: {
           'src/common/logger/logger.service.ts': `import { Injectable } from '@nestjs/common';
-import pino from 'pino';
+import { pino } from 'pino';
 
 @Injectable()
 export class LoggerService {
@@ -52,7 +52,7 @@ export class LoggerService {
 `,
           'src/common/logger/logger.middleware.ts': `import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import pinoHttp from 'pino-http';
+import { pinoHttp } from 'pino-http';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {

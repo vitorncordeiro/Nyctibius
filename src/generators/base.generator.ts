@@ -15,7 +15,7 @@ export class BaseGenerator implements Generator {
       'start:dev': 'tsx watch src/main.ts',
       'start:debug': 'node --inspect-brk dist/main.js',
       build: 'tsc -p tsconfig.build.json',
-      lint: 'eslint . --ext .ts',
+      lint: 'eslint .',
       test: 'jest',
       'test:watch': 'jest --watch',
       'test:cov': 'jest --coverage',
@@ -42,6 +42,7 @@ export class BaseGenerator implements Generator {
       ],
       devDependencies: [
         { name: '@types/node', version: VERSIONS.dev.typesNode, dev: true },
+        { name: '@types/express', version: VERSIONS.dev.typesExpress, dev: true },
         { name: '@nestjs/cli', version: VERSIONS.nestjs.cli, dev: true },
         { name: 'ts-node', version: VERSIONS.dev.tsNode, dev: true },
         { name: 'tsx', version: VERSIONS.dev.tsx, dev: true },
@@ -82,7 +83,7 @@ export class BaseGenerator implements Generator {
 `,
         'tsconfig.build.json': `{
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "test", "dist"]
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
 }
 `,
         'nest-cli.json': `{

@@ -24,6 +24,9 @@ export class JwtGenerator implements Generator {
         { name: 'passport-jwt', version: VERSIONS.auth.passportJwt },
         { name: 'bcryptjs', version: VERSIONS.auth.bcryptjs },
       ],
+      devDependencies: [
+        { name: '@types/passport-jwt', version: VERSIONS.dev.typesPassportJwt, dev: true },
+      ],
       env,
       moduleImports: ['AuthModule'],
       files: {
