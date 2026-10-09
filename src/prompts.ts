@@ -1,6 +1,7 @@
 import { confirm, intro, isCancel, select, text } from '@clack/prompts';
 
 import { DEFAULT_OPTIONS, type ProjectOptions } from './types.js';
+import { listPresets, applyPreset } from './presets.js';
 
 export type SelectOption<T extends string | boolean> = {
   value: T;
@@ -74,6 +75,34 @@ export async function promptProjectConfiguration(
   current: Partial<ProjectOptions>,
 ): Promise<Partial<ProjectOptions>> {
   intro('Nyctibius');
+
+  // Ask about using a preset first
+  const presets = listPresets();
+  const presetSelection = await promptSelect(
+    'Start with a preset?',
+    [
+      { value: '', label: 'Custom configuration' },
+      ...presets.map((p) => ({
+        value: p.name.toLowerCase().replace(/ /g, '-'),
+        label: p.name,
+        hint: p.description,
+      })),
+    ],
+    '',
+  );
+
+  // If a preset was selected, apply it and ask for confirmation
+  if (presetSelection) {
+    const presetOptions = applyPreset(current, presetSelection);
+    const confirmPreset = await promptBoolean(
+      `Use ${presets.find((p) => p.name.toLowerCase().replace(/ /g, '-') === presetSelection)?.name} preset?`,
+      true,
+    );
+
+    if (confirmPreset) {
+      current = presetOptions;
+    }
+  }
 
   const projectName = await promptText('Project name', current.projectName ?? 'my-api');
   const packageManager = await promptSelect(
@@ -170,6 +199,41 @@ export async function promptProjectConfiguration(
     current.git?.initialize ?? DEFAULT_OPTIONS.git.initialize,
   );
 
+  const eslintEnabled = await promptBoolean(
+    'Enable ESLint',
+    current.quality?.eslint ?? DEFAULT_OPTIONS.quality.eslint,
+  );
+
+  const prettierEnabled = await promptBoolean(
+    'Enable Prettier',
+    current.quality?.prettier ?? DEFAULT_OPTIONS.quality.prettier,
+  );
+
+  const huskyEnabled = await promptBoolean(
+    'Enable Husky (git hooks)',
+    current.quality?.husky ?? DEFAULT_OPTIONS.quality.husky,
+  );
+
+  const testingFramework = await promptSelect(
+    'Testing framework',
+    [
+      { value: 'jest', label: 'Jest' },
+      { value: 'vitest', label: 'Vitest' },
+      { value: 'none', label: 'None' },
+    ],
+    current.testing?.framework ?? DEFAULT_OPTIONS.testing.framework,
+  );
+
+  const loggingProvider = await promptSelect(
+    'Logging provider',
+    [
+      { value: 'pino', label: 'Pino' },
+      { value: 'winston', label: 'Winston' },
+      { value: 'nest', label: 'NestJS Built-in' },
+    ],
+    current.logging?.provider ?? DEFAULT_OPTIONS.logging.provider,
+  );
+
   return {
     projectName,
     packageManager,
@@ -195,6 +259,10 @@ export async function promptProjectConfiguration(
     jobs: {
       provider: jobsSelection,
     },
+    health: true,
+    logging: {
+      provider: loggingProvider,
+    },
     docker: {
       ...DEFAULT_OPTIONS.docker,
       enabled: dockerEnabled,
@@ -202,6 +270,14 @@ export async function promptProjectConfiguration(
     git: {
       ...DEFAULT_OPTIONS.git,
       initialize: gitEnabled,
+    },
+    quality: {
+      eslint: eslintEnabled,
+      prettier: prettierEnabled,
+      husky: huskyEnabled,
+    },
+    testing: {
+      framework: testingFramework,
     },
   };
 }
